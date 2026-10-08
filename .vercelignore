@@ -1,0 +1,9 @@
+.omx
+.git
+.env*
+node_modules
+.next
+.DS_Store
+tests
+scripts
+AGENTS.md

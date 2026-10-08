@@ -1,0 +1,49 @@
+{
+  "data": {
+    "id": 1,
+    "attributes": {
+      "createdAt": "2024-05-01T00:51:59.513Z",
+      "updatedAt": "2026-02-19T21:06:59.452Z",
+      "publishedAt": "2024-05-01T00:52:01.288Z",
+      "MainMenuItems": [
+        {
+          "id": 1,
+          "__component": "menu.link",
+          "name": "Sobre Nosotros",
+          "url": "/sobre-nosotros"
+        },
+        {
+          "id": 2,
+          "__component": "menu.link",
+          "name": "Ministerios",
+          "url": "/ministerios"
+        },
+        {
+          "id": 13,
+          "__component": "menu.link",
+          "name": "Contáctenos",
+          "url": "/contactenos"
+        },
+        {
+          "id": 15,
+          "__component": "menu.link",
+          "name": "Kohyouth",
+          "url": "https://www.instagram.com/kohyouth?igsh=MWllcDhrMWJxNWZ4cw=="
+        },
+        {
+          "id": 48,
+          "__component": "menu.link",
+          "name": "reinodeloscielos IG",
+          "url": "https://www.instagram.com/reinodeloscielos?igsh=MTc2YmJpbnk5anpkag=="
+        },
+        {
+          "id": 50,
+          "__component": "menu.link",
+          "name": "Anuncios ",
+          "url": "https://kohwelcome.my.canva.site/"
+        }
+      ]
+    }
+  },
+  "meta": {}
+}
