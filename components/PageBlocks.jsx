@@ -124,7 +124,7 @@ function Block({ b }) {
         <section className="section center contact">
           <Heading b={b} />
           <p>{b.Description}</p>
-          <ContactForm />
+          <ContactForm accessKey={process.env.WEB3FORMS_ACCESS_KEY || process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY} />
         </section>
       );
     case "blocks.centered-content-with-text-columns":

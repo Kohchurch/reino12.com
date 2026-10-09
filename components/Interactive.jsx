@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { sendContact } from "../lib/contact.mjs";
 export function Navigation({ items }) {
   const [open, setOpen] = useState(false);
   return (
@@ -64,7 +65,7 @@ export function Testimonials({ items = [] }) {
     </div>
   ) : null;
 }
-export function ContactForm() {
+export function ContactForm({ accessKey }) {
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
   async function submit(event) {
@@ -73,14 +74,7 @@ export function ContactForm() {
     setStatus("");
     try {
       const data = Object.fromEntries(new FormData(event.currentTarget));
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.error || "No se pudo enviar el mensaje.");
+      await sendContact(data, accessKey);
       event.target.reset();
       setStatus("¡Gracias! Tu mensaje ha sido enviado.");
     } catch (error) {
@@ -143,7 +137,7 @@ export function ContactForm() {
 export function Newsletter({ url }) {
   return url ? (
     <form
-      action={url.replace("/post-json?", "/post?")}
+      action={url.replaceAll("&amp;", "&").replace("/post-json?", "/post?")}
       method="POST"
       target="_blank"
     >

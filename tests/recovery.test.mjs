@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { collection, safeHref, media } from "../lib/strapi.mjs";
-import { POST } from "../app/api/contact/route.js";
+import { sendContact } from "../lib/contact.mjs";
 import { parseVideos } from "../lib/youtube.mjs";
 import fs from "node:fs";
 import mediaMap from "../data/media-map.json" with { type: "json" };
@@ -98,36 +98,13 @@ test("all archived media have local mappings", () => {
       if (b.Image?.data)
         assert.ok(media(b.Image).url.startsWith("/recovered/images/"));
 });
-const request = (body) =>
-  new Request("http://localhost/api/contact", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", origin: "http://localhost" },
-    body: JSON.stringify(body),
-  });
-test("contact rejects invalid data and foreign origins before sending", async () => {
-  assert.equal(
-    (await POST(request({ name: "Test", email: "invalid", message: "Test" })))
-      .status,
-    400,
-  );
-  assert.equal(
-    (
-      await POST(
-        new Request("http://localhost/api/contact", {
-          method: "POST",
-          headers: { origin: "https://elsewhere.example" },
-          body: "{}",
-        }),
-      )
-    ).status,
-    403,
-  );
-  assert.equal((await POST(request({ botcheck: "spam" }))).status, 200);
+test("contact rejects invalid data and missing configuration before sending", async () => {
+  await assert.rejects(sendContact({ name: "Test", email: "invalid", message: "Test" }, "test-key"), /revisa/);
+  await assert.rejects(sendContact({ name: "Test", email: "test@example.com", message: "Test" }), /temporalmente/);
+  await sendContact({ botcheck: "spam" });
 });
 test("contact submits to the original provider using mocked delivery", async () => {
   const previous = global.fetch;
-  const previousKey = process.env.WEB3FORMS_ACCESS_KEY;
-  process.env.WEB3FORMS_ACCESS_KEY = "test-key";
   global.fetch = async (url, options) => {
     assert.equal(url, "https://api.web3forms.com/submit");
     const body = JSON.parse(options.body);
@@ -136,21 +113,12 @@ test("contact submits to the original provider using mocked delivery", async () 
     return Response.json({ success: true });
   };
   try {
-    assert.equal(
-      (
-        await POST(
-          request({
-            name: "Test",
-            email: "test@example.com",
-            message: "A test with mocked delivery",
-          }),
-        )
-      ).status,
-      200,
-    );
+    await sendContact({ name: "Test", email: "test@example.com", message: "A test with mocked delivery" }, "test-key");
+    global.fetch = async () => Response.json({ success: false }, { status: 403 });
+    await assert.rejects(sendContact({ name: "Test", email: "test@example.com", message: "Rejected test" }, "test-key"), /No se pudo/);
+    global.fetch = async () => Response.json({ success: false });
+    await assert.rejects(sendContact({ name: "Test", email: "test@example.com", message: "Rejected test" }, "test-key"), /No se pudo/);
   } finally {
     global.fetch = previous;
-    if (previousKey === undefined) delete process.env.WEB3FORMS_ACCESS_KEY;
-    else process.env.WEB3FORMS_ACCESS_KEY = previousKey;
   }
 });

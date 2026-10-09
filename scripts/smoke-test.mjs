@@ -35,12 +35,17 @@ assert.equal(
   (await fetch(base + "/api/revalidate?secret=invalid")).status,
   401,
 );
-const invalidForm = await fetch(base + "/api/contact", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ name: "", email: "invalid", message: "" }),
-});
-assert.equal(invalidForm.status, 400);
+const contactHtml = await (await fetch(base + "/contactenos")).text();
+assert.ok(contactHtml.includes('class="contact-form"'));
+assert.ok(contactHtml.includes('"accessKey"') || contactHtml.includes('\\"accessKey\\"'));
+const homeHtml = await (await fetch(base)).text();
+assert.match(homeHtml, /rel="icon"[^>]*href="\/favicon.ico"/);
+assert.equal((await fetch(base + "/favicon.ico")).status, 200);
+const signupAction = homeHtml.match(/<form[^>]*action="([^"]+)"/)?.[1];
+const signupUrl = new URL(signupAction.replaceAll("&amp;", "&"));
+assert.ok(signupUrl.searchParams.has("u"));
+assert.ok(signupUrl.searchParams.has("id"));
+assert.ok(!signupUrl.searchParams.has("amp;id"));
 if (process.env.REVALIDATE_SECRET && new URL(base).hostname === "localhost") {
   const response = await fetch(base + "/api/revalidate", {
     method: "POST",
@@ -56,7 +61,7 @@ const report = {
   failures,
   missingRouteStatus: 404,
   unauthorizedWebhookStatus: 401,
-  invalidFormStatus: 400,
+  contactFormConfigured: true,
   checkedAt: new Date().toISOString(),
 };
 await fs.writeFile(
@@ -64,5 +69,5 @@ await fs.writeFile(
   JSON.stringify(report, null, 2),
 );
 console.log(
-  `PASS: ${paths.length} routes, 404 handling, webhook authentication and contact validation.`,
+  `PASS: ${paths.length} routes, 404 handling, webhook authentication, contact configuration and favicon.`,
 );

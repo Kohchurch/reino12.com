@@ -12,7 +12,7 @@ Use Node.js 22 or newer. Run `npm ci`, copy `.env.example` to `.env.local`, conf
 - Menu, footer, text, photos, SEO, CTAs, testimonials, FAQs, and galleries come from Strapi. Published changes refresh through a 60-second cache on subsequent visits. An authenticated webhook can expire the cache immediately.
 - The original fonts and CSS are archived in `public/recovered`. Current CMS images have local copies; newly uploaded images continue to load from Strapi/Cloudinary. Public content snapshots in `data` provide a fallback if the CMS is unavailable.
 - The client-provided KOH logo is preserved in `public/rdc-logo-lg.png` and displayed without its transparent outer padding.
-- Contact forms use the original Web3Forms integration through `/api/contact`. `WEB3FORMS_ACCESS_KEY` is server-only. Mailchimp subscriptions use `NEXT_PUBLIC_MAILCHIMP_URL` and open the provider's signup result in a new tab.
+- Contact forms submit directly from the browser to Web3Forms, as required by its spam protection. `WEB3FORMS_ACCESS_KEY` is a public form identifier passed to the contact component, not an account credential. Mailchimp subscriptions use `NEXT_PUBLIC_MAILCHIMP_URL` and open the provider's signup result in a new tab.
 - YouTube recordings use the church's public channel feed without an API key, refresh hourly, and fall back to verified video IDs if the feed is unavailable.
 - Donation, directions, Instagram, and announcement links retain their existing destinations. Sitemap and robots routes are generated from CMS content.
 - The original Google Analytics property is retained for production Vercel deployments; previews and local tests do not send analytics.

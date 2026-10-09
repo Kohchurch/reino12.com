@@ -5,6 +5,10 @@ export const metadata = {
   metadataBase: new URL(process.env.SITE_URL || "https://www.reino12.com"),
   title: "Reino de los Cielos",
   description: "Iglesia Reino de los Cielos",
+  icons: {
+    icon: [{ url: "/favicon.ico", sizes: "192x192", type: "image/x-icon" }],
+    apple: "/apple-touch-icon.png",
+  },
 };
 export default async function Layout({ children }) {
   const [menu, footer] = await Promise.all([getMenu(), getFooter()]);
